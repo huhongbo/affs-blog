@@ -26,12 +26,8 @@ hostname $PROPERHOSTNAME
 
 /sbin/service iptables stop
 /sbin/chkconfig iptables off
-rpm -Uvh http://yum.afistfulofservers.net/affs/fedora/13/noarch/affs-release-13-1.noarch.rpm
 
-yum clean all
-yum -y install libselinux-ruby
-yum -y install affs-chef
-yum -y install affs-ohai
+curl www.opscode.com/beta-install.sh | bash
 
 
 (
