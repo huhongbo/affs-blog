@@ -1,0 +1,56 @@
+########################################################
+#
+# Installs me some puppet
+#
+########################################################
+#
+
+bundle agent puppet_server
+{
+vars:
+  "foo" slist => { "Hi." };
+  "bar" slist => { "I'm like a Chef attribute." };
+  "puppet_server_packages" slist => { "puppet-server", "puppet", "facter" };
+
+classes:
+  "puppetmaster_enabled" expression =>
+    returnszero("/sbin/chkconfig puppetmaster", "noshell");
+
+files:
+  "/etc/puppet/manifests/site.pp"
+    comment => "default configuration file for puppet",
+    copy_from => local_cp("/var/cfengine/inputs/puppet/site.pp"),
+    perms => system("644"),
+    classes => if_repaired("restart_puppetmaster");
+
+packages:
+  redhat|CentOS::
+  "$(puppet_server_packages)"
+    package_policy => "add",
+    package_method => yum;
+
+processes:
+  "/usr/bin/ruby /usr/sbin/puppetmasterd"
+    comment => "the puppetmaster service",
+    restart_class => canonify("restart_puppetmaster");
+
+commands:
+  "/bin/echo"
+    args => "$(foo) $(bar)",
+    ifvarclass => canonify("restart_puppetmaster");
+
+  "/sbin/service puppetmaster restart"
+    ifvarclass => canonify("restart_puppetmaster");
+
+  "/sbin/chkconfig puppetmaster on"
+    ifvarclass => "!puppetmaster_enabled";
+
+}
+
+########################################################
+
+body perms system(p)
+{
+  mode => "$(p)";
+}
+
