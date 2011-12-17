@@ -25,10 +25,3 @@ knife[:slicehost_password] = '00000000000000000000000000000000000000000000000000
 knife[:aws_access_key_id]     = '00000000000000000000'
 knife[:aws_secret_access_key] = '0000000000000000000000000000000000000000'
 
-#knife[:region]  = "us-east-1"
-#knife[:availability_zone] = "us-west-1b"
-#knife[:ssh_user] = "root"
-#knife[:flavor] = "t1.micro"
-#knife[:image] = "ami-10a55279"
-#knife[:use_sudo]  = "false"
-#knife[:distro] = "affs-fc13"

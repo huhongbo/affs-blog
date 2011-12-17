@@ -1,4 +1,3 @@
-#
 # Cookbook Name:: cfengine
 # Recipe:: server
 #
@@ -15,7 +14,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+#######################################################
+##
+## Installs me some cfengine
+##
+#########################################################
 
 node.set[:cfengine][:server]=true
 
@@ -86,10 +90,9 @@ directory "/var/cfengine/masterfiles/puppet" do
 end
 
 # puppet/site.pp
-template "/var/cfengine/masterfiles/puppet/site.pp" do
-  source "puppet/site.pp.erb"
-  variables( :cfengine_clients => cfengine_clients )
-  notifies :restart, "service[cf-serverd]"
+remote_directory "/var/cfengine/masterfiles/puppet" do
+  source "server/puppet"
+
 end
 
 
@@ -110,7 +113,7 @@ cfengine_services = %w{
 
 # services
 cfengine_services.each { |s|
-  service "#{s}" do
+  service s do
     action [:enable,:start]
   end
 }
