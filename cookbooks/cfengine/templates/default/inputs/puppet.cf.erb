@@ -1,42 +1,31 @@
 ########################################################
-##
-## Installs me some puppet
-##
-#########################################################
+#
+# Installs me some puppet
+#
+########################################################
+#
 
 bundle agent puppet_server
 {
 vars:
   "foo" slist => { "Hi." };
   "bar" slist => { "I'm like a Chef attribute." };
-  "redhat_packages" slist => { "puppet-server", "puppet", "facter" };
-  "debian_packages" slist => { "puppetmaster", "puppet", "vim-puppet" };
+  "puppet_server_packages" slist => { "puppet-server", "puppet", "facter" };
 
 classes:
   "puppetmaster_enabled" expression =>
     returnszero("/sbin/chkconfig puppetmaster", "noshell");
 
-  "iptables_enabled" expression =>
-      returnszero("/sbin/service iptables status", "noshell");
-
 files:
-  "/etc/puppet"
+  "/etc/puppet/manifests/site.pp"
     comment => "default configuration file for puppet",
-    copy_from => local_cp("/var/cfengine/masterfiles/puppet"),
-    depth_search => recurse("inf"),
+    copy_from => local_cp("/var/cfengine/inputs/puppet/site.pp"),
     perms => system("644"),
     classes => if_repaired("restart_puppetmaster");
 
 packages:
   redhat|CentOS::
-  "$(redhat_packages)"
-    comment => "install redhat based distro packages",
-    package_policy => "add",
-    package_method => yum;
-
-  debian|ubuntu::
-  "$(debian_packages)"
-    comment => "install debian based distro packages",
+  "$(puppet_server_packages)"
     package_policy => "add",
     package_method => yum;
 
@@ -56,11 +45,6 @@ commands:
   "/sbin/chkconfig puppetmaster on"
     ifvarclass => "!puppetmaster_enabled";
 
-  "/sbin/service iptables stop"
-    ifvarclass => "iptables_enabled";
-
-  "/sbin/chkconfig iptables off"
-    ifvarclass => "iptables_enabled";
 }
 
 ########################################################
@@ -69,3 +53,4 @@ body perms system(p)
 {
   mode => "$(p)";
 }
+
