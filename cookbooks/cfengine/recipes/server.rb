@@ -31,14 +31,12 @@ end
     template "#{cfdir}/#{dir}/#{c}.cf" do
       source "inputs/#{c}.cf.erb"
       variables( :cfengine_server => node )
-      notifies :restart, "service[cf-serverd]"
     end
   }
 
   # updates
   template "#{cfdir}/#{dir}/update.cf" do
     source "inputs/update.cf.erb"
-    notifies :restart, "service[cf-serverd]"
   end
 end
 
@@ -47,6 +45,7 @@ template "#{cfdir}/inputs/promises.cf" do
   source "inputs/promises-server.cf.erb"
   variables( :cfengine_clients => cfengine_clients )
   notifies :restart, "service[cf-serverd]"
+  notifies :restart, "service[cf-execd]"
 end
 
 
@@ -59,13 +58,13 @@ template "#{cfdir}/masterfiles/promises.cf" do
   source "inputs/promises-client.cf.erb"
   variables( :cfengine_clients => cfengine_clients )
   notifies :restart, "service[cf-serverd]"
+  notifies :restart, "service[cf-execd]"
 end
 
 # puppet.cf
 template "#{cfdir}/masterfiles/puppet.cf" do
   source "inputs/puppet.cf.erb"
   variables( :cfengine_clients => cfengine_clients )
-  notifies :restart, "service[cf-serverd]"
 end
 
 ## puppet server policy distribution
